@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: customerops
+      POSTGRES_PASSWORD: customerops
+      POSTGRES_DB: customerops
+    ports:
+      - "5432:5432"
+    volumes:
+      - customerops_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U customerops -d customerops"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: development
+      API_HOST: 0.0.0.0
+      API_PORT: 8080
+      DATABASE_URL: postgres://customerops:customerops@db:5432/customerops
+      FRONTEND_ORIGIN: http://localhost:5173
+      SESSION_SECRET: dev-only-change-me-before-production-use-32b
+      RUST_LOG: customer_ops_api=info,tower_http=info
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  customerops_pg:

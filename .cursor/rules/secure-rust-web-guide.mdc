@@ -1,0 +1,29 @@
+---
+description: Secure Rust + SvelteKit engineering contract for Customer Ops
+alwaysApply: true
+---
+
+# Secure engineering contract
+
+Authoritative guide (read before architecture or feature work):
+
+`docs/security/CURSOR_SECURE_RUST_WEB_GUIDE.md`
+
+## Non-negotiables
+
+- Stack default: SvelteKit + TS, Rust + Axum, PostgreSQL, Docker; Redis only when justified.
+- Security target: OWASP ASVS 5.0 Level 2 (+ selected L3 for admin/credentials/audit).
+- Work in small phases; keep the app runnable after each phase.
+- Before code changes: summarize what/files/security/tests.
+- Never hard-code secrets; never expose stack traces/SQL/secrets to users.
+- Never trust frontend validation; authorize every protected backend action (deny by default).
+- No `unsafe` unless documented; no `unwrap`/`expect`/`panic!` on request paths.
+- Do not invent schema/API fields — update contracts deliberately.
+- Feature incomplete until: authz, validation, errors, logging, tests, docs.
+- Prefer opaque HttpOnly Secure cookie sessions; Argon2id for passwords.
+- Use SQLx bind params; explicit DTOs; idempotency for retried mutations.
+- Fail closed on auth/config; pin deps; run fmt/clippy/test/audit gates.
+
+## Bootstrap order
+
+Follow guide Phase 0 → Phase 1 before product features (signup, CRM, SIMs, tickets).

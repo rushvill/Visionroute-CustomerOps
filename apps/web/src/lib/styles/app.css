@@ -1,0 +1,146 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: var(--color-text);
+  background: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  font-weight: 600;
+  margin: 0;
+}
+
+a {
+  color: var(--color-brand);
+}
+
+a:hover {
+  color: var(--color-brand-strong);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 1000;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-brand-strong);
+  color: #fff;
+  border-radius: var(--radius-control);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Utility motion — hero route, section entrance, ops feedback */
+@keyframes route-draw {
+  from {
+    stroke-dashoffset: 240;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ops-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-info) 35%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+.motion-rise {
+  animation: rise-in 0.55s ease-out both;
+}
+
+.motion-rise-delay {
+  animation: rise-in 0.55s ease-out 0.12s both;
+}
+
+.route-line {
+  stroke-dasharray: 240;
+  stroke-dashoffset: 240;
+  animation: route-draw 0.85s ease-out forwards;
+}
+
+.ops-feedback {
+  animation: ops-pulse 0.7s ease-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .motion-rise,
+  .motion-rise-delay,
+  .route-line,
+  .ops-feedback {
+    animation: none;
+  }
+  .route-line {
+    stroke-dashoffset: 0;
+  }
+}

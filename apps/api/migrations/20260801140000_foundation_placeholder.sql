@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS _foundation_meta (
+  id SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  bootstrapped_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+INSERT INTO _foundation_meta (id)
+VALUES (1)
+ON CONFLICT (id) DO NOTHING;

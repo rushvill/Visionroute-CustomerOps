@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+**/node_modules/
+target/
+**/target/
+dist/
+build/
+.svelte-kit/
+.env
+.env.local
+.env.*.local
+!.env.example
+*.pem
+.DS_Store
+coverage/
+test-results/
+playwright-report/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.vercel
+.output
+*.log
