@@ -264,10 +264,16 @@ function readHeaders(cookieHeader: string | null, mutating = false): HeadersInit
   };
 }
 
-const API_TIMEOUT_MS = 8_000;
+const API_TIMEOUT_MS = 3_000;
 
 function apiSignal(): AbortSignal {
-  return AbortSignal.timeout(API_TIMEOUT_MS);
+  // Prefer AbortSignal.timeout when available; fall back for older runtimes.
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(API_TIMEOUT_MS);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  return controller.signal;
 }
 
 async function apiErrorMessage(response: Response): Promise<string> {

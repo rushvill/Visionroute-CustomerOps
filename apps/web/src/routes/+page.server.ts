@@ -16,7 +16,8 @@ export const actions: Actions = {
           Accept: 'application/json',
           Origin: frontendOrigin(),
           Cookie: cookieHeader
-        }
+        },
+        signal: AbortSignal.timeout(3_000)
       });
       forwardSetCookies(response, cookies);
     } catch {

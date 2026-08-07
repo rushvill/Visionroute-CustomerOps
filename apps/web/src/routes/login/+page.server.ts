@@ -35,7 +35,8 @@ export const actions: Actions = {
           'Content-Type': 'application/json',
           Origin: frontendOrigin()
         },
-        body: JSON.stringify({ usernameOrEmail, password })
+        body: JSON.stringify({ usernameOrEmail, password }),
+        signal: AbortSignal.timeout(8_000)
       });
     } catch {
       return fail(503, {
