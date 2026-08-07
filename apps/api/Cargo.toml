@@ -38,5 +38,14 @@ codegen-units = 1
 panic = "abort"
 strip = "symbols"
 
+# Low-memory profile for Render free Docker / CI image builds.
+# Avoids thin-LTO + single codegen unit, which often OOM-kills free builders.
+[profile.release-free]
+inherits = "release"
+lto = false
+codegen-units = 16
+opt-level = 2
+strip = "symbols"
+
 [lints.rust]
 unsafe_code = "forbid"

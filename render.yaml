@@ -1,8 +1,9 @@
-# Render Blueprint — VisionRoute Customer Ops API + Postgres
-# Deploy: https://dashboard.render.com/blueprints/new?repo=https%3A%2F%2Fgithub.com%2Frushvill%2FVisionroute-CustomerOps
+# Render Blueprint — VisionRoute Customer Ops API + Postgres (free-tier friendly)
 #
-# When applying the blueprint, set BOOTSTRAP_ADMIN_PASSWORD (12+ chars).
-# After first successful admin login, delete that env var from the service.
+# API image is built on GitHub Actions (more RAM), then Render only runs it.
+# After the first green "api-image" workflow, Manual Sync this blueprint.
+#
+# Set BOOTSTRAP_ADMIN_PASSWORD on first apply; delete after first admin login.
 
 databases:
   - name: customerops-db
@@ -14,12 +15,11 @@ databases:
 services:
   - type: web
     name: customerops-api
-    runtime: docker
+    runtime: image
     plan: free
-    # Keep API near the DB (Oregon). Cross-region free stacks often hang/fail.
     region: oregon
-    dockerfilePath: ./apps/api/Dockerfile
-    dockerContext: ./apps/api
+    image:
+      url: ghcr.io/rushvill/customerops-api:latest
     healthCheckPath: /health
     envVars:
       - key: APP_ENV

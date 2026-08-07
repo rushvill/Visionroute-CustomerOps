@@ -6,6 +6,14 @@ Browser → Vercel (SvelteKit BFF) → Render (Rust API) → Render Postgres
 
 Session cookies are set on the **Vercel** domain via the BFF; the browser never talks to Render directly for login.
 
+## Free-tier notes (Render)
+
+- **Postgres free** expires after ~30 days — upgrade before real customer data.
+- **Web free** sleeps after idle; first request can take ~30–60s to wake.
+- **Do not compile Rust on Render free** if builds OOM. This repo builds the API image on **GitHub Actions** and Render runs `ghcr.io/rushvill/customerops-api:latest`.
+- After pushing to `master`, wait for the **api-image** workflow to finish, then **Manual Sync** the Blueprint (or redeploy the service).
+- If Render cannot pull the image, open GitHub → Packages → `customerops-api` → Package settings → **Change visibility** → Public.
+
 ## Prerequisites
 
 - GitHub repo with this project pushed
