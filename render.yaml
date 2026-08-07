@@ -9,13 +9,15 @@ databases:
     plan: free
     databaseName: customerops
     user: customerops
+    region: oregon
 
 services:
   - type: web
     name: customerops-api
     runtime: docker
     plan: free
-    region: singapore
+    # Keep API near the DB (Oregon). Cross-region free stacks often hang/fail.
+    region: oregon
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: ./apps/api
     healthCheckPath: /health
