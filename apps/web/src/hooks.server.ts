@@ -14,8 +14,8 @@ function applySecurityHeaders(response: Response, isDev: boolean): void {
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
 
-  // SvelteKit component styles need 'unsafe-inline' until nonce CSP is wired via svelte.config.
-  // Dev: report-only so Vite HMR keeps working. Prod: enforce.
+  // SvelteKit needs an inline bootstrap script to hydrate. Prefer nonces later;
+  // without 'unsafe-inline' in production, all client interactivity (Show password, etc.) is dead.
   const csp = [
     "default-src 'self'",
     "base-uri 'none'",
@@ -27,8 +27,8 @@ function applySecurityHeaders(response: Response, isDev: boolean): void {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     isDev
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-      : "script-src 'self'",
-    "connect-src 'self' http://127.0.0.1:8080 http://localhost:8080"
+      : "script-src 'self' 'unsafe-inline'",
+    "connect-src 'self' https://*.onrender.com http://127.0.0.1:8080 http://localhost:8080"
   ].join('; ');
 
   response.headers.set(

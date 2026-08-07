@@ -1,9 +1,8 @@
 # Render Blueprint — VisionRoute Customer Ops API + Postgres
-# https://render.com/docs/blueprint-spec
+# Deploy: https://dashboard.render.com/blueprints/new?repo=https%3A%2F%2Fgithub.com%2Frushvill%2FVisionroute-CustomerOps
 #
-# After first deploy:
-# 1. Set FRONTEND_ORIGIN to your Vercel URL (https://….vercel.app)
-# 2. Set BOOTSTRAP_ADMIN_PASSWORD (12+ chars), restart once, log in, then delete it
+# When applying the blueprint, set BOOTSTRAP_ADMIN_PASSWORD (12+ chars).
+# After first successful admin login, delete that env var from the service.
 
 databases:
   - name: customerops-db
@@ -36,11 +35,11 @@ services:
       - key: SESSION_TTL_HOURS
         value: "12"
       - key: FRONTEND_ORIGIN
-        sync: false
+        value: https://visionroute-customerops.vercel.app
       - key: BOOTSTRAP_ADMIN_USERNAME
         value: admin
       - key: BOOTSTRAP_ADMIN_EMAIL
-        sync: false
+        value: admin@visionroute.app
       - key: BOOTSTRAP_ADMIN_PASSWORD
         sync: false
       - key: BOOTSTRAP_ADMIN_NAME

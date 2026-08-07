@@ -11,7 +11,8 @@
     step = undefined,
     rows = undefined,
     error = undefined,
-    hint = undefined
+    hint = undefined,
+    revealable = false
   }: {
     label: string;
     name: string;
@@ -25,13 +26,23 @@
     rows?: number;
     error?: string;
     hint?: string;
+    /** When true (or type is password), show a Show/Hide control. */
+    revealable?: boolean;
   } = $props();
 
   const id = $derived(`field-${name}`);
+  const canReveal = $derived(revealable || type === 'password');
+  let revealed = $state(false);
+
+  function toggleReveal(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    revealed = !revealed;
+  }
 </script>
 
-<label class="field" for={id}>
-  <span class="label">{label}</span>
+<div class="field">
+  <label class="label" for={id}>{label}</label>
   {#if rows}
     <textarea
       {id}
@@ -42,6 +53,33 @@
       aria-invalid={error ? 'true' : undefined}
       aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
     >{value}</textarea>
+  {:else if canReveal}
+    <div class="control">
+      <input
+        {id}
+        {name}
+        type={revealed ? 'text' : 'password'}
+        {required}
+        {autocomplete}
+        {minlength}
+        {min}
+        {step}
+        {value}
+        class:invalid={!!error}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+      />
+      <button
+        type="button"
+        class="reveal"
+        aria-pressed={revealed}
+        aria-controls={id}
+        aria-label={revealed ? 'Hide password' : 'Show password'}
+        onclick={toggleReveal}
+      >
+        {revealed ? 'Hide' : 'Show'}
+      </button>
+    </div>
   {:else}
     <input
       {id}
@@ -64,7 +102,7 @@
   {#if error}
     <span class="error" id="{id}-error" role="alert">{error}</span>
   {/if}
-</label>
+</div>
 
 <style>
   .field {
@@ -75,6 +113,36 @@
   .label {
     font-weight: 500;
     color: var(--color-text);
+  }
+  .control {
+    position: relative;
+    display: grid;
+  }
+  .control input {
+    padding-right: 4.25rem;
+  }
+  .reveal {
+    position: absolute;
+    top: 50%;
+    right: 0.4rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: var(--text-meta);
+    font-weight: 600;
+    padding: 0.35rem 0.55rem;
+    border-radius: var(--radius-control);
+    cursor: pointer;
+  }
+  .reveal:hover {
+    color: var(--color-text);
+  }
+  .reveal:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
   }
   input,
   textarea {
