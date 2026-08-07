@@ -264,6 +264,12 @@ function readHeaders(cookieHeader: string | null, mutating = false): HeadersInit
   };
 }
 
+const API_TIMEOUT_MS = 8_000;
+
+function apiSignal(): AbortSignal {
+  return AbortSignal.timeout(API_TIMEOUT_MS);
+}
+
 async function apiErrorMessage(response: Response): Promise<string> {
   try {
     const body = (await response.json()) as { error?: { message?: string } };
@@ -277,7 +283,8 @@ async function apiErrorMessage(response: Response): Promise<string> {
 async function apiGet<T>(path: string, cookieHeader: string | null): Promise<T | null> {
   try {
     const response = await fetch(`${apiBaseUrl()}${path}`, {
-      headers: readHeaders(cookieHeader)
+      headers: readHeaders(cookieHeader),
+      signal: apiSignal()
     });
     if (!response.ok) return null;
     return (await response.json()) as T;
@@ -298,7 +305,8 @@ async function apiPost<T>(
         ...readHeaders(cookieHeader, true),
         ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
       },
-      ...(body !== undefined ? { body: JSON.stringify(body) } : {})
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+      signal: apiSignal()
     });
     if (!response.ok) {
       return { ok: false, status: response.status, message: await apiErrorMessage(response) };
@@ -311,6 +319,8 @@ async function apiPost<T>(
 }
 
 export async function fetchMe(cookieHeader: string | null): Promise<MeUser | null> {
+  // Anonymous visits should not wait on a cold/missing API.
+  if (!cookieHeader?.includes('vr_ops_session=')) return null;
   return apiGet<MeUser>('/api/v1/me', cookieHeader);
 }
 
@@ -404,7 +414,8 @@ export async function fetchMeSubscription(
 ): Promise<SubscriptionCustomer | null | undefined> {
   try {
     const response = await fetch(`${apiBaseUrl()}/api/v1/me/subscription`, {
-      headers: readHeaders(cookieHeader)
+      headers: readHeaders(cookieHeader),
+      signal: apiSignal()
     });
     if (!response.ok) return null;
     return (await response.json()) as SubscriptionCustomer | null;
@@ -556,7 +567,8 @@ export async function patchAdminPrivacyRequest(
         Origin: frontendOrigin(),
         ...(cookieHeader ? { Cookie: cookieHeader } : {})
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: apiSignal()
     });
     if (!response.ok) {
       return { ok: false, status: response.status, message: await apiErrorMessage(response) };
